@@ -1,0 +1,28 @@
+<nav class="nav-bar container-fluid bg-white  shadow justify-content-end">
+    <div class="dropdown mx-4">
+        <div class="text-muted mx-2  d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="mx-2 text-grey">
+                {{ app.user.getFullName() }}
+            </span>
+            {% if app.user.getFile() %}
+                <img class="avatar" src="{{ app.user.getFile().getPath() }}" alt="avatar">
+            {% else %}
+                <i class="bi bi-person-circle fs-3"></i>
+            {% endif %}
+        </div>
+        <ul class="dropdown-menu animate slideIn">
+            <li>
+                <a class="dropdown-item" href="{{ path('profile') }}">
+                    <i class="bi bi-person-circle text-grey "></i>
+                    <span class="text-grey mx-1"> Profile</span>
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item dropdown-item--last" href="{{ path('app_logout') }}">
+                    <i class="bi bi-box-arrow-right text-grey"></i>
+                    <span class="mx-1 text-grey">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,29 @@
+<aside class="sidebar">
+
+    <div class="d-flex align-items-center px-4 mb-2">
+        <a class="sidebar-link{% if app.request.get('_route') starts with 'dashboard' %} sidebar-link--active {% endif %}"
+           href="{{ path('dashboard') }}"
+        >
+            <i class="mr-2 bi bi-speedometer"></i>
+            <span>Dashboard</span>
+        </a>
+    </div>
+
+    <div class="d-flex align-items-center px-4 mb-2">
+        <a class="sidebar-link{% if app.request.get('_route') starts with 'task' %} sidebar-link--active {% endif %}"
+           href="{{ path('task_list') }}"
+        >
+            <i class="mr-2 bi bi-list-task"></i>
+            <span>Tasks</span>
+        </a>
+    </div>
+
+    <div class="d-flex align-items-center px-4 mb-2">
+        <a class="sidebar-link{% if app.request.get('_route') starts with 'user' %} sidebar-link--active {% endif %}"
+           href="{{ path('user_list') }}"
+        >
+            <i class="mr-2 bi bi-people"></i>
+            <span>Users</span>
+        </a>
+    </div>
+</aside>
