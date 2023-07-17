@@ -1,0 +1,169 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Users{% endblock %}
+
+{% block body %}
+
+    {% for message in app.flashes('success') %}
+        {{ component('AlertComponent', {message: message}) }}
+    {% endfor %}
+
+    <div class="card shadow border-0 rounded-1 mb-4 mt-4">
+        <div class="card-header card-header--special border-0 py-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Users</h5>
+                <a class="btn btn-white" href="{{ path('user_create') }}">
+                    <i class="bi bi-plus"></i>
+                    <span>New</span>
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4 mb-4 d-flex align-items-center">
+                    <span class="mx-2 fw-medium text-muted">Search:</span>
+                    <form class="w-100" method="GET" action="{{ path('user_list') }}">
+                        <div class="d-flex">
+                            <div class="input-group">
+                                <input
+                                        class="form-control form-control-sm shadow-none search"
+                                        type="search"
+                                        name="search"
+                                        placeholder="john@gmail.com"
+                                        aria-label="search"
+                                        value="{{ search ?? '' }}"
+                                />
+                                <button class="input-group-text bg-transparent"><i class="bi bi-search"></i></button>
+
+                            </div>
+                            {% if search %}
+                                <a class="btn btn-outline-primary mx-2" href="{{ path('user_list') }}">Reset</a>
+                            {% endif %}
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-8 mb-4">
+                    <form class="d-flex align-items-center justify-content-end " id="js-user-filter" method="GET" action="{{ path('user_list') }}">
+                        <div class="col-5 d-flex align-items-center mx-4">
+                        <span class="mx-2 fw-medium text-muted">Role:</span>
+                        <select id="js-user-roles" class="form-select" aria-label="Roles" name="role">
+                            <option {% if roleSelected is same as null %}selected {% endif %} value="">Choose role</option>
+                            {% for role in roles %}
+                                <option {% if roleSelected is same as role.value %} selected {% endif %}>{{ role.value }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if roleSelected  %}
+                            <a class="btn btn-outline-primary mx-2" href="{{ path('user_list') }}">Reset</a>
+                        {% endif %}
+                        </div>
+                        <div class="col-3 d-flex align-items-center">
+                        <span class="mx-2 fw-medium text-muted text-nowrap">Show records:</span>
+                        <select class="form-select" id="js-user-pagination" aria-label="Pages" name="limit">
+                            <option {% if limit is same as 10 %} selected {% endif %}>10</option>
+                            <option {% if limit is same as 25 %} selected {% endif %}>25</option>
+                            <option {% if limit is same as 50 %} selected {% endif %}>50</option>
+                            <option {% if limit is same as 100 %} selected {% endif %}>100</option>
+                        </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table-special">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Firstname</th>
+                        <th>Lastname</th>
+                        <th>Email</th>
+                        <th>Roles</th>
+                        <th>Tasks</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <th scope="row">
+                                <span>
+                                         {% if user.getFile() %}
+                                             <img class="avatar" src="{{ user.getFile().getPath() }}" alt="avatar">
+                                {% else %}
+                                             <i class="bi bi-person-circle fs-3"></i>
+                                         {% endif %}
+                                </span>
+                            </th>
+                            <td>
+                                {{ user.getFirstName() }}
+                            </td>
+                            <td>
+                                {{ user.getLastName() }}
+                            </td>
+                            <td>
+                                {{ user.getEmail() }}
+                            </td>
+                            <td>
+                                {{ user.getRoles()|join(',') }}
+                            </td>
+                            <td>
+                                {{ user.getTasks()|length }}
+                            </td>
+                            <td class="row-actions">
+                                <a class="text-warning text-opacity-75"
+                                   href="{{ path('user_edit', {id: user.getId()}) }}">
+                                    <i class="bi bi-pencil"></i></a>
+
+
+                                <a class="text-danger"
+                                   href="#"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#userDelete"
+                                    > <i
+                                            class="bi bi-x-circle"></i></a>
+
+                                <a class="text-primary"
+                                   href="{{ path('user_show', {id: user.getId()}) }}"> <i
+                                            class="bi bi-eye"></i></a>
+
+                            </td>
+                        </tr>
+
+
+                        <div class="modal fade" id="userDelete" tabindex="-1" aria-labelledby="userDelete" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="userDelete">Are you sure?</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body d-flex justify-content-between ">
+                                            <a class="btn btn-danger w-25 fw-bold " href="{{ path('user_delete', {id: user.getId()}) }}">
+                                                <i class="bi bi-trash"></i>
+                                                Delete
+                                            </a>
+                                            <button type="button" class="btn btn-dark w-25 fw-bold" data-bs-dismiss="modal" aria-label="Close">
+                                                <i class="bi bi-x"></i>
+                                                Close
+                                            </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="navigation d-flex justify-content-center mt-4">
+                {{ knp_pagination_render(users) }}
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}User{% endblock %}
+
+{% block body %}
+
+    <div class="card shadow border-0 rounded-1 mb-4 mt-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <span>
+                         {% if user.getFile() %}
+                             <img class="avatar" src="{{ user.getFile().getPath() }}" alt="avatar">
+                         {% else %}
+                             <i class="bi bi-person-circle fs-3"></i>
+                         {% endif %}
+                    </span>
+                    <h5 class="mx-1 fs-0 mb-0 text-nowrap py-2 py-xl-0 h6">
+                         {{ user.getFullName() }} ({{ user.getEmail() }})
+                    </h5>
+                </div>
+                    <a class="btn btn-white" href="{{ path('user_list') }}">
+                        <i class="mr-2 bi bi-people"></i>
+                        <span>Back</span>
+                    </a>
+
+                </div>
+
+        </div>
+    </div>
+
+    <div class="card shadow border-0 rounded-1 mb-4 mt-4">
+        <div class="card-header card-header--special border-0 py-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Details</h5>
+                <a class="btn btn-white" href="{{ path('user_edit', {id: user.getId()}) }}">
+                    <i class="bi bi-pencil"></i>
+                    <span>Edit</span>
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class=" ">
+                <div class="mt-2 text-muted">
+                    <span class="fw-medium">ID: </span>
+                    <span>{{ user.getId() }}</span>
+                </div>
+                <div class="mt-2 text-muted">
+                    <span class="fw-medium">Firstname: </span>
+                    <span>{{ user.getFirstName() }}</span>
+                </div>
+                <div class="mt-2 text-muted">
+                    <span class="fw-medium">Lastname: </span>
+                    <span>{{ user.getLastName() }}</span>
+                </div>
+                <div class="mt-2 text-muted">
+                    <span class="fw-medium">Email: </span>
+                    <span>{{ user.getEmail() }}</span>
+                </div>
+                <div class="mt-2 text-muted">
+                    <span class="fw-medium">Roles: </span>
+                    <span>{{ user.getRoles()|join(', ') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% if user.getTasks()|length > 0%}
+    <div class="card shadow border-0 rounded-1 mb-4 mt-4">
+        <div class="card-header card-header--special border-0 py-2">
+            <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Tasks: {{ user.getTasks()|length }}</h5>
+        </div>
+        <div class="card-body">
+            {% for task in user.getTasks() %}
+                <div class="my-2 py-2 border-top d-flex justify-content-between align-items-center">
+                    <div>
+                        <a class="text-muted " href="{{ path('task_show', {id: task.getId()}) }}" >{{ task.getTitle() }}</a>
+                        <span class="badge rounded-pill text-bg-secondary mx-2">
+                                     {{ task.getStatus().name }}
+                        </span>
+                    </div>
+                    <span class="d-block mt-2 mb-1 text-muted text-center">
+                        <i class="bi bi-calendar3 mx-1"></i>
+                        <span class="fw-bold">{{ task.getFormattedDeadline() }}</span>
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+
+
+{% endblock %}
