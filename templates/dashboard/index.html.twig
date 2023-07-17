@@ -1,0 +1,19 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+
+    {% for message in app.flashes('success') %}
+        {{ component('AlertComponent', {message: message}) }}
+    {% endfor %}
+
+
+    <div class="card shadow border-0 mt-4">
+        <div class="card-body">
+            <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">
+                Hello {{ app.user.getFullName() }}
+            </h5>
+        </div>
+    </div>
+{% endblock %}
