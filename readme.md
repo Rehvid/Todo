@@ -1,9 +1,10 @@
 # Todo
 
 ## Table of contents
-    - [General information](#general-information)
-    - [Technologies used](#technologies-used)
-    - [Project status](#project-status)
+
+ - [General information](#general-information)
+ - [Technologies used](#technologies-used)
+ - [Project status](#project-status)
 
 ## General information
 
