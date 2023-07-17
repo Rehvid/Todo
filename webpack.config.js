@@ -54,7 +54,7 @@ Encore
     })
 
     // enables Sass/SCSS support
-    //.enableSassLoader()
+    .enableSassLoader()
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
@@ -69,11 +69,11 @@ Encore
     // uncomment if you're having problems with a jQuery plugin
     //.autoProvidejQuery()
 
-    .enablePostCssLoader((options) => {
-        options.postcssOptions = {
-            config: './postcss.config.js'
-        }
-    }) //
+    // .enablePostCssLoader((options) => {
+    //     options.postcssOptions = {
+    //         config: './postcss.config.js'
+    //     }
+    // }) //
 
     .copyFiles({
         from: './assets/images',
