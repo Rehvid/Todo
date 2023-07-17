@@ -1,20 +1,180 @@
-{% extends 'base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Hello TaskController!{% endblock %}
+{% block title %}Tasks{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% for message in app.flashes('success') %}
+        {{ component('AlertComponent', {message: message}) }}
+    {% endfor %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/var/www/app/src/Controller/TaskController.php'|file_link(0) }}">src/Controller/TaskController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/var/www/app/templates/task/index.html.twig'|file_link(0) }}">templates/task/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <div class="card shadow border-0 rounded-1 mb-4 mt-4">
+        <div class="card-header card-header--special border-0 py-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">Tasks</h5>
+                <a class="btn btn-white" href="{{ path('task_create') }}">
+                    <i class="bi bi-plus"></i>
+                    <span>New</span>
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-3 mb-4 d-flex align-items-center">
+                    <span class="mx-2 fw-medium text-muted">Search:</span>
+                    <form class="w-100" method="GET" action="{{ path('task_list') }}">
+                        <div class="d-flex">
+                            <div class="input-group">
+                                <input
+                                        class="form-control form-control-sm shadow-none search"
+                                        type="search"
+                                        name="search"
+                                        placeholder="Make..."
+                                        aria-label="search"
+                                        value="{{ search ?? '' }}"
+                                />
+                                <button class="input-group-text bg-transparent"><i class="bi bi-search"></i></button>
+
+                            </div>
+                            {% if search %}
+                                <a class="btn btn-outline-primary mx-2" href="{{ path('task_list') }}">Reset</a>
+                            {% endif %}
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-9 mb-4">
+                    <form class="d-flex align-items-center justify-content-end " id="js-filter" method="GET"
+                          action="{{ path('task_list') }}">
+                        <div class="col-3 d-flex align-items-center mx-4">
+                            <span class="mx-2 fw-medium text-muted">Status</span>
+                            <select id="js-user-roles" class="form-select" aria-label="Roles" name="status">
+                                <option {% if selectedStatus is same as null %}selected {% endif %} value="">Choose
+                                    status
+                                </option>
+                                {% for status in statuses %}
+                                    <option value="{{ status.value }}" {% if selectedStatus is same as status.value %} selected {% endif %}>{{ status.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-3 d-flex align-items-center mx-4">
+                            <span class="mx-2 fw-medium text-muted">Priority</span>
+                            <select id="js-user-roles" class="form-select" aria-label="Roles" name="priority">
+                                <option {% if selectedPriority is same as null %}selected {% endif %} value="">Choose
+                                    priority
+                                </option>
+                                {% for priority in priorities %}
+                                    <option value="{{ priority.value }}" {% if selectedPriority is same as priority.value %} selected {% endif %}>{{ priority.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-3 d-flex align-items-center">
+                            <span class="mx-2 fw-medium text-muted text-nowrap">Show records:</span>
+                            <select class="form-select" id="js-user-pagination" aria-label="Pages" name="limit">
+                                <option {% if limit is same as 10 %} selected {% endif %}>10</option>
+                                <option {% if limit is same as 25 %} selected {% endif %}>25</option>
+                                <option {% if limit is same as 50 %} selected {% endif %}>50</option>
+                                <option {% if limit is same as 100 %} selected {% endif %}>100</option>
+                            </select>
+                        </div>
+                        {% if selectedPriority or selectedStatus or limit > 10 %}
+                            <a class="btn btn-outline-primary mx-2" href="{{ path('task_list') }}">Reset</a>
+                        {% endif %}
+                    </form>
+                </div>
+
+
+                <div class="table-responsive">
+                    <table class="table-special">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Deadline</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for task in tasks %}
+                            <tr>
+                                <th scope="row">
+                                    {{ task.getId() }}
+                                </th>
+                                <td>
+                                    {{ task.getTitle() }}
+                                </td>
+                                <td>
+                                    {{ component('Status', {status: task.getStatus()}) }}
+                                </td>
+                                <td>
+                                    {{ component('Priority', {priority: task.getPriority()}) }}
+                                </td>
+                                <td>
+                                    {{ task.getFormattedDeadline() }}
+                                </td>
+                                <td class="row-actions">
+                                    {% if (is_granted('ROLE_ADMIN')) %}
+                                        <a class="text-warning text-opacity-75"
+                                           href="{{ path('task_edit', {id: task.getId()}) }}">
+                                            <i class="bi bi-pencil"></i></a>
+                                    {% endif %}
+
+                                    <a class="text-primary"
+                                       href="{{ path('task_show', {id: task.getId()} ) }}"> <i
+                                                class="bi bi-eye"></i></a>
+                                    {% if (is_granted('ROLE_ADMIN')) %}
+                                        <a class="text-danger"
+                                           href="#"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#taskDelete"
+                                        > <i
+                                                    class="bi bi-x-circle"></i></a>
+                                    {% endif %}
+                                    <a class="text-success"
+                                       href="{{ path('task_done', {id: task.getId()}) }}"> <i
+                                                class="bi bi-check-circle"></i></a>
+                                </td>
+                            </tr>
+
+
+                            <div class="modal fade" id="taskDelete" tabindex="-1" aria-labelledby="taskDelete"
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="taskDelete">Are you sure?</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body d-flex justify-content-between ">
+                                            <a class="btn btn-danger w-25 fw-bold "
+                                               href="{{ path('task_delete', {id: task.getId()}) }}">
+                                                <i class="bi bi-trash"></i>
+                                                Delete
+                                            </a>
+                                            <button type="button" class="btn btn-dark w-25 fw-bold"
+                                                    data-bs-dismiss="modal" aria-label="Close">
+                                                <i class="bi bi-x"></i>
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="navigation d-flex justify-content-center mt-4">
+                    {{ knp_pagination_render(tasks, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

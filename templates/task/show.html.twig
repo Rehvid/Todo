@@ -1,0 +1,82 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block body %}
+
+    {% for message in app.flashes('success') %}
+        {{ component('AlertComponent', {message: message}) }}
+    {% endfor %}
+
+
+    <div class="card shadow border-0 rounded-1 mb-4 mt-4">
+        <div class="card-header card-header--special border-0 py-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fs-0 mb-0 text-nowrap py-2 py-xl-0">{{ task.getTitle() }}</h5>
+                <a class="btn btn-white" href="{{ path('task_list') }}">
+                    <i class="mr-2 bi bi-people"></i>
+                    <span>Back</span>
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-3">
+                    <span class="d-block mt-2 mb-1 text-muted text-center">Assigned to</span>
+                    <span class="d-block mt-2 mb-1 text-muted text-center fw-bold">{{ task.getUser().getFullName() }}</span>
+                </div>
+                <div class="col-3">
+                    <span class="d-block mt-2 mb-1 text-muted text-center">Deadline</span>
+                    <span class="d-block mt-2 mb-1 text-muted text-center">
+                        <i class="bi bi-calendar3 mx-1"></i>
+                        <span class="fw-bold text-danger">{{ task.getFormattedDeadline() }}</span>
+                    </span>
+                </div>
+                <div class="col-3">
+                    <span class="d-block mt-2 mb-1 text-muted text-center"
+                          data-bs-target="#taskStatusModal"
+                          data-bs-toggle="modal"
+                          role="button"
+                    >
+                         <i class="mr-2 bi bi-pencil"></i>
+                        Status
+                    </span>
+                    <span class="d-block mt-2 mb-1 text-muted text-center">
+                        {{ component('Status', {status: task.getStatus()}) }}
+                    </span>
+                </div>
+                <div class="col-3">
+                    <span class="d-block mt-2 mb-1 text-muted text-center">Priority</span>
+                    <span class="d-block mt-2 mb-1 text-center">
+                        {{ component('Priority', {priority: task.getPriority()}) }}
+                    </span>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <span class="text-muted">{{ task.getDescription() }}</span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="taskStatusModal" tabindex="-1" aria-labelledby="taskStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="taskStatusModalLabel">Change status</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-dark">Change</button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
