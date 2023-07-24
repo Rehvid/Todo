@@ -23,4 +23,4 @@ Main goal for this project is to manage tasks.
 
 ## Project status
 
-Project is: in progress
+Project is: suspended
